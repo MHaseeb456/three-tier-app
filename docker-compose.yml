@@ -1,43 +1,42 @@
 version: '3.8'
+
 services:
   frontend:
-    build:
-      context: ./three-tier-frontend-
-      dockerfile: Dockerfile
+    image: ${ECR_REGISTRY}/three-tier-frontend:latest
     container_name: frontend
     ports:
       - "80:80"
     depends_on:
       - backend
+
   backend:
-    build:
-      context: ./three-tier-backend
-      dockerfile: Dockerfile
+    image: ${ECR_REGISTRY}/three-tier-backend:latest
     container_name: backend
     ports:
       - "3000:3000"
     env_file:
-      - ./three-tier-backend/.env
+      - ./backend/.env
     depends_on:
-      - redis
       - mysql
+      - redis
+
   mysql:
     image: mysql:8.0
     container_name: mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=admin123
-      - MYSQL_DATABASE=schooldb
-      - MYSQL_USER=admin
-      - MYSQL_PASSWORD=admin123
-    ports:
-      - "3306:3306"
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_DATABASE: schooldb
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
     volumes:
-      - ./mysql_data:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql
+
   redis:
     image: redis:alpine
     container_name: redis
-    ports:
-      - "6379:6379"
     volumes:
-      - ./redis_data:/data
+      - redis_data:/data
+
+volumes:
+  mysql_data:
+  redis_data:
