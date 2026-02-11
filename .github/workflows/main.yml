@@ -10,11 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Config AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -22,12 +20,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # 3️⃣ Login to Amazon ECR
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      # 4️⃣ Build & Push Frontend Image
       - name: Build & Push Frontend
         env:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
@@ -39,7 +35,6 @@ jobs:
           
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-      # 5️⃣ Build & Push Backend Image
       - name: Build & Push Backend
         env:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
@@ -51,7 +46,6 @@ jobs:
           
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-      # 6️⃣ Deploy on EC2 via SSH
       - name: Deploy on EC2
         uses: appleboy/ssh-action@v1.0.3
         env:
